@@ -8,16 +8,42 @@
 import SwiftUI
 
 struct ContentView: View {
+    @State var showingSheet = false
+    @StateObject var tasks = Tasks()
+    
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundColor(.accentColor)
-            Text("Hello, world!")
+        NavigationView {
+            List{
+                ForEach(tasks.items) { item in
+                    Section {
+                        TaskView(task: item)
+                    }
+                }
+                .onDelete(perform: removeItems)
+            }
+            
+            .navigationTitle("Deadlines")
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing){
+                    Button(action: {
+                        showingSheet = true
+                    }) {
+                        Image(systemName: "plus")
+                    }
+                }
+                
+                }
+            .sheet(isPresented: $showingSheet) { AddTask(tasks: tasks)
+            }
         }
-        .padding()
+    }
+    
+    func removeItems(at offsets: IndexSet) {
+        tasks.items.remove(atOffsets: offsets)
     }
 }
+
+
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
